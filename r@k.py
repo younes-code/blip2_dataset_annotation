@@ -50,5 +50,5 @@ def process_file(file_path, k=5):
     print(f"Mean R@{k} for all predictions: {mean_r_at_k}")
 
 if __name__ == "__main__":
-    file_path = "similarities.txt"
+    file_path = "similarities_by_frame.txt"
     process_file(file_path, k=10)
