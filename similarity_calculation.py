@@ -10,6 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
 from transformers import AutoModel, AutoTokenizer
 from tqdm import tqdm
+import torch.nn.functional as F
 
 def read_captions(file_path):
     """
