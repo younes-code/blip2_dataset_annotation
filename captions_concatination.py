@@ -26,7 +26,7 @@ def read_file(file_path):
 
 def extract_source_and_caption(line):
       """Extract source and caption from a line."""
-      source_split=line.split('/')
+      source_split=line.split(' ') #/
       caption_split=line.split('##')
 
       source,caption=source_split[0].strip(),caption_split[1].strip()
@@ -56,6 +56,6 @@ def main(file_path,output_path):
 
         
 if __name__ == "__main__":
-    file_path = 'captions.txt'
-    output_path= 'concatenated_seperated_captions.txt'
+    file_path = 'UCFCrime_Train.txt'
+    output_path= 'concatenated_UCFCrime_Train.txt'
     main(file_path,output_path)

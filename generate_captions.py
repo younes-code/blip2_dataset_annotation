@@ -127,7 +127,6 @@ def main(ucf_path, save_path, skip_frames=90):
             # print(f'Time for generating one caption: {end_total_time - start_total_time} seconds')
 
 if __name__ == "__main__":
-    ucf_directory = '../Datasets/UCF_Crimes_Frames'
-    captions_save_path = 'captions.txt'
-
+    ucf_directory = '../Datasets/XD-Violance/XD_Violance_frames/'
+    captions_save_path = 'XD_Violance_captions.txt'
     main(ucf_directory, captions_save_path)

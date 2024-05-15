@@ -73,7 +73,6 @@ def load_pretrained_bert_model():
     print("Download done")
     return model, tokenizer
 
-import torch.nn.functional as F
 
 def calculate_similarity(captions, target_words, bert_model, tokenizer):
     """

@@ -6,7 +6,7 @@ It takes all the captions from a video concatinated in one pargraphe
 """
 import torch
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity,euclidean_distances
 from nltk.corpus import stopwords
 from transformers import AutoModel, AutoTokenizer
 from tqdm import tqdm
@@ -77,11 +77,10 @@ def calculate_similarity(captions, target_words, bert_model, tokenizer):
 
             # Ensure the shape of caption_tokens is (batch_size, seq_length)
             caption_tokens = caption_tokens.view(1, -1) if len(caption_tokens.shape) == 1 else caption_tokens
-
             # Get embeddings for the caption
             with torch.no_grad():
                 caption_outputs = bert_model(input_ids=caption_tokens)
-                caption_embeddings = caption_outputs.last_hidden_state[:, 0, :]
+                caption_embeddings = caption_outputs.last_hidden_state[0, :, :]
             # Get embeddings for the target words
             target_word_embeddings = []
             for word in target_word_tokens:
@@ -89,14 +88,16 @@ def calculate_similarity(captions, target_words, bert_model, tokenizer):
                 word = word.view(1, -1) if len(word.shape) == 1 else word
                 with torch.no_grad():
                     target_outputs = bert_model(input_ids=word)
-                    target_word_embeddings.append(target_outputs.last_hidden_state[:, 0, :])
-
+                    target_word_embeddings.append(target_outputs.last_hidden_state[0, :, :])
+            print("caption_embeddings",caption_embeddings.shape)
+            print(target_word_embeddings[0].shape)
             # Calculate cosine similarity between the caption and each target word
-            similarities_list = [(target_words[i], cosine_similarity(caption_embeddings, target_word_embedding)[0][0])
+            similarities_list = [(target_words[i], np.min(euclidean_distances(caption_embeddings[1:-1], target_word_embedding[1:-1])))
                                 for i, target_word_embedding in enumerate(target_word_embeddings)]
-
+            
+            print(euclidean_distances(caption_embeddings, target_word_embeddings[0]).shape)
             # Sort the similarities in descending order
-            sorted_similarities = sorted(similarities_list, key=lambda x: x[1], reverse=True)
+            sorted_similarities = sorted(similarities_list, key=lambda x: x[1], reverse=False)
 
             # Apply softmax to the similarities
             softmax_scores = F.softmax(torch.tensor([similarity for _, similarity in sorted_similarities]), dim=0).numpy()
@@ -132,12 +133,12 @@ def main(file_path, target_words, output_file):
 
     with open(output_file, 'w') as out_file:
         for video_name, similarity_list in similarities.items():
-            result_str = f"{video_name}: {sorted(similarity_list[0]['similarities'], key=lambda x: x[1], reverse=True)}"
+            result_str = f"{video_name}: {sorted(similarity_list[0]['softmax_scores'], key=lambda x: x[1], reverse=True)}"
             print(result_str)
             out_file.write(result_str + '\n')
 
 if __name__ == '__main__':
-    file_path = "concatenated_seperated_captions.txt"
-    output_file = "similarities.txt"
+    file_path = "concatenated_captions.txt"
+    output_file = "similarities_testing.txt"
     classes = ["Abuse", "Arrest", "Arson", "Assault", "Burglary", "Explosion", "Fighting", "Normal Videos", "Road Accidents", "Robbery", "Shooting", "Shoplifting", "Stealing", "Vandalism"]
     main(file_path, classes, output_file)
