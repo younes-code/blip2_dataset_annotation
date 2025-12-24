@@ -29,7 +29,7 @@ def plot_confusion_matrix(y_true, y_pred, classes, normalize=False, title=None, 
     else:
         print('Confusion matrix, without normalization')
 
-    print("Classes:", classes)  # Debugging statement
+    print("Classes:", class_names)  # Debugging statement
 
     fig, ax = plt.subplots()
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -59,8 +59,16 @@ def plot_confusion_matrix(y_true, y_pred, classes, normalize=False, title=None, 
     return ax
 
 def map_class_name(class_name):
-    return class_name
-
+    if class_name.startswith("RoadAccidents"):
+        # Replace "RoadAccidents" with "Accident"
+        return class_name.replace("RoadAccidents", "Accident")
+    elif class_name.startswith("Normal_Videos_"):
+        # Replace "Normal_Videos_" with "Normal Videos"
+        return class_name.replace("Normal_Videos_", "Normal Videos")
+    else:
+        return class_name
+    # return class_name
+    
 def calculate_r_at_k(predictions, ground_truth, k=5):
     top_k_predictions = predictions[:k]
     return int(ground_truth in [class_name for class_name, _ in top_k_predictions])
@@ -73,7 +81,7 @@ def process_file(file_path, k=10):
 
     with open(file_path, 'r') as file:
         lines = file.readlines()
-
+    print(lines[0])
     for line in lines:
         # Split the line into class name and predictions
         parts = line.split(':')
@@ -84,7 +92,7 @@ def process_file(file_path, k=10):
             class_name = map_class_name(raw_class_name)
 
             # Debugging: Print class names after mapping
-            print("Mapped Class Name:", class_name)
+            # print("Mapped Class Name:", class_name)
 
             # Extract predictions and ground truth from the line
             _, predictions_text = parts[0], parts[1]
@@ -92,12 +100,12 @@ def process_file(file_path, k=10):
             ground_truth = class_name
 
             # Debugging: Print predictions and ground truth labels
-            print("Ground Truth:", ground_truth)
-            print("Predictions:", predictions)
+            # print("Ground Truth:", ground_truth)
+            # print("Predictions:", predictions)
 
             # Calculate R@K
             r_at_k = calculate_r_at_k(predictions, ground_truth, k)
-            print(f"R@{k} for {class_name}: {r_at_k}")
+            # print(f"R@{k} for {class_name}: {r_at_k}")
 
             total_r_at_k += r_at_k
             num_lines += 1
@@ -114,5 +122,5 @@ def process_file(file_path, k=10):
     plt.show()
 
 if __name__ == "__main__":
-    file_path = "similarities_concatenated_UCFCrime_Train.txt"
+    file_path = "similarities/interval_5s_similarities.txt"
     process_file(file_path, k=1)

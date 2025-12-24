@@ -34,11 +34,8 @@ def preprocess_caption(caption):
 
 def read_captions(file_path):
     captions_dict = {}
-    valid_names = ["Abuse", "Arrest", "Arson", "Assault", "Burglary", "Explosion", "Fighting", "RoadAccidents", "Normal_Videos_", "Robbery", "Shooting", "Shoplifting", "Stealing", "Vandalism"]
+    valid_names = ["Abuse", "Arrest", "Arson", "Assault", "Burglary", "Explosion", "Fighting", "Accident", "Normal_Videos_", "Robbery", "Shooting", "Shoplifting", "Stealing", "Vandalism"]
     pattern = r'^(' + '|'.join(valid_names) + ')'
-    with open(file_path, 'r') as file:
-        line_count = sum(1 for line in file)
-        print ("line_count",line_count)
 
     with open(file_path, 'r') as file:
         for line in file:
@@ -58,12 +55,8 @@ def read_captions(file_path):
 
 def generate_embeddings(captions_dict, bert_model, tokenizer, output_file):
     embeddings_dict = {}
-    total_videos = len(captions_dict)
-    print(f"Total videos to process: {total_videos}")
-    processed_videos = 0
     
     for video_name, caption in tqdm(captions_dict.items(), desc="Generating embeddings", unit="videos"):
-        print(f"Processing video: {video_name}")
         # Tokenize the caption
         inputs = tokenizer(caption, padding=True, truncation=True, return_tensors="pt")
         input_ids = inputs['input_ids']
@@ -75,18 +68,10 @@ def generate_embeddings(captions_dict, bert_model, tokenizer, output_file):
             caption_embeddings = mean_pooling(model_output, attention_mask)
             
         embeddings_dict[video_name] = caption_embeddings.numpy()
-        processed_videos += 1
-        print(f"Processed videos: {processed_videos}/{total_videos}")
 
     # Save embeddings to file
     np.savez(output_file, **embeddings_dict)
     print(f"Embeddings saved to {output_file}")
-
-    # Print the keys of the saved embeddings
-    print("Keys in the saved embeddings:")
-    with np.load(output_file) as saved_embeddings:
-        print(saved_embeddings.keys())
-
 
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output.last_hidden_state  # Get the embeddings of all tokens
@@ -104,8 +89,8 @@ def load_pretrained_bert_model():
     return model, tokenizer
 
 if __name__ == '__main__':
-    file_path = "concatenated_captions copy.txt"
-    output_file = "captions_embeddings.npz"
+    file_path = "resampled_ucf_captions/captions_interval_5s_concatenated.txt"
+    output_file = "embeddings/ucf_5s_concatenated_captions_embeddings.npz"
     
     captions_dict = read_captions(file_path)
     bert_model, tokenizer = load_pretrained_bert_model()

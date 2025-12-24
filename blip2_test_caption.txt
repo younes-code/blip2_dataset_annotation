@@ -1,0 +1,10 @@
+test_vid.mp4/519.jpg ## a white truck is driving down the street
+test_vid.mp4/834.jpg ## a white truck is driving down the street
+test_vid.mp4/4.jpg ## a white truck is driving down the street
+test_vid.mp4/216.jpg ## an image of a police car driving down the street
+test_vid.mp4/858.jpg ## a white truck is driving down the street
+test_vid.mp4/519.jpg ## a white truck is driving down the street
+test_vid.mp4/834.jpg ## a white truck is driving down the street
+test_vid.mp4/4.jpg ## a white truck is driving down the street
+test_vid.mp4/216.jpg ## an image of a police car driving down the street
+test_vid.mp4/858.jpg ## a white truck is driving down the street
